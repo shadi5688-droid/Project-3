@@ -1,76 +1,98 @@
+
+function $(id) {
+    return document.getElementById(id);
+}
+
 const books = LMS.books();
 const members = LMS.members();
 const loans = LMS.loans();
 
-const $ = id => document.getElementById(id);
 
-const active = loans.filter(l => !l.returnDate);
+let totalBooks = 0;
+let availableBooks = 0;
+for (let i = 0; i < books.length; i++) {
+    totalBooks += books[i].quantity;
+    availableBooks += books[i].available;
+}
 
-$('sBooks').textContent = books.reduce(
-    (sum, book) => sum + book.quantity, 0
-);
-
-$('sMembers').textContent = members.length;
-
-$('sBorrowed').textContent = active.length;
-
-$('sAvail').textContent = books.reduce(
-    (sum, book) => sum + book.available, 0
-);
-
-
-
-$('todayLabel').textContent = new Date().toLocaleDateString(
-    'en-GB',
-    {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+let borrowedCount = 0;   
+let overdueCount = 0;    
+for (let i = 0; i < loans.length; i++) {
+    if (!loans[i].returnDate) {
+        borrowedCount++;
     }
-);
+    if (LMS.statusOf(loans[i]) === 'overdue') {
+        overdueCount++;
+    }
+}
 
+$('sBooks').textContent = totalBooks;
+$('sMembers').textContent = members.length;
+$('sBorrowed').textContent = borrowedCount;
+$('sAvail').textContent = availableBooks;
 
-const overdue = loans.filter(
-    l => LMS.statusOf(l) === 'overdue'
-).length;
+$('todayLabel').textContent = new Date().toLocaleDateString('en-GB');
 
-if (overdue) {
-    const a = $('overdueAlert');
-
-    a.hidden = false;
-    a.textContent =
-        `⚠️ There are ${overdue} overdue loans. Check Borrowing History.`;
+if (overdueCount > 0) {
+    $('overdueAlert').hidden = false;
+    $('overdueAlert').textContent = 'There are ' + overdueCount + ' overdue loans.';
 }
 
 
-const mName = id =>
-    (members.find(m => m.id === id) || {}).name || '— (Deleted)';
+function render() {
 
-const bName = id =>
-    (books.find(b => b.id === id) || {}).title || '— (Deleted)';
+    const q = $('search').value.trim().toLowerCase();
+    const status = $('status').value;
 
+    const sorted = loans.slice().sort(function (a, b) {
+        return b.id.localeCompare(a.id);
+    });
 
-const recent = [...loans]
-    .sort((a, b) => b.id.localeCompare(a.id))
-    .slice(0, 6);
+    let html = '';
 
+    for (let i = 0; i < sorted.length; i++) {
 
-$('recent').innerHTML = recent.length
+        const l = sorted[i];
 
-    ? recent.map(l => `
-        <tr>
-            <td>${LMS.esc(mName(l.memberId))}</td>
-            <td>${LMS.esc(bName(l.bookId))}</td>
-            <td class="num">${l.borrowDate}</td>
-            <td>${LMS.badge(l)}</td>
-        </tr>
-    `).join('')
+        const member = members.find(function (m) { return m.id === l.memberId; });
+        const book = books.find(function (b) { return b.id === l.bookId; });
 
-    : `
-        <tr>
-            <td colspan="4" class="empty">
-                No recent activity.
-            </td>
-        </tr>
-    `;
+        const memberName = member ? member.name : '— (Deleted)';
+        const bookTitle = book ? book.title : '— (Deleted)';
+
+        if (status !== '' && LMS.statusOf(l) !== status) {
+            continue;
+        }
+
+        const text = (l.id + ' ' + memberName + ' ' + bookTitle).toLowerCase();
+        if (!text.includes(q)) {
+            continue;
+        }
+
+        let rowClass = '';
+        if (LMS.statusOf(l) === 'overdue') {
+            rowClass = 'late';
+        }
+
+        html += '<tr class="' + rowClass + '">' +
+            '<td class="num">' + LMS.esc(l.id) + '</td>' +
+            '<td>' + LMS.esc(memberName) + '</td>' +
+            '<td>' + LMS.esc(bookTitle) + '</td>' +
+            '<td class="num">' + l.borrowDate + '</td>' +
+            '<td class="num">' + l.dueDate + '</td>' +
+            '<td class="num">' + (l.returnDate || '—') + '</td>' +
+            '<td>' + LMS.badge(l) + '</td>' +
+            '</tr>';
+    }
+
+    if (html === '') {
+        html = '<tr><td colspan="7" class="empty">No matching records.</td></tr>';
+    }
+
+    $('rows').innerHTML = html;
+}
+
+$('search').oninput = render;
+$('status').onchange = render;
+
+render();

@@ -1,58 +1,41 @@
 <!DOCTYPE html>
-<html >
+<html lang="en" dir="ltr">
 
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Book Management | LIMU Library</title>
-
     <link rel="stylesheet" href="css/style.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body data-page="books">
 
     <div class="layout">
 
-
         <aside class="sidebar" id="sidebar"></aside>
-
 
         <main class="content">
 
-
             <header class="page-header">
-
                 <div>
                     <h1>Book Management</h1>
                     <p>Add, edit, search, and manage library books</p>
                 </div>
 
-                <!-- Add Book Button -->
-                <button class="btn btn-primary" id="addBtn">
-                    ＋ Add Book
-                </button>
-
+                <button class="btn btn-primary" id="addBtn">＋ Add Book</button>
             </header>
 
-
             <div class="toolbar">
-
                 <input
                     class="input"
                     id="search"
                     placeholder="Search by title, author, category, or ISBN"
                 >
-
             </div>
 
-
             <div class="table-wrap">
-
                 <table>
-
                     <thead>
                         <tr>
                             <th>Book ID</th>
@@ -67,11 +50,8 @@
                     </thead>
 
                     <tbody id="rows"></tbody>
-
                 </table>
-
             </div>
-
 
             <div class="modal-overlay" id="modal">
 
@@ -82,7 +62,6 @@
                     <form id="form" novalidate>
 
                         <input type="hidden" id="bid">
-
 
                         <div class="form-grid">
 
@@ -99,8 +78,6 @@
                             <div class="field">
                                 <label for="category">Category *</label>
                                 <input class="input" id="category" list="cats">
-
-                                <!-- Suggested Categories -->
                                 <datalist id="cats"></datalist>
                             </div>
 
@@ -111,35 +88,16 @@
 
                             <div class="field">
                                 <label for="qty">Quantity *</label>
-                                <input
-                                    class="input"
-                                    id="qty"
-                                    type="number"
-                                    min="1"
-                                    value="1"
-                                >
+                                <input class="input" id="qty" type="number" min="1" value="1">
                             </div>
 
                         </div>
 
-
-                        <p
-                            class="hint"
-                            id="formErr"
-                            style="color:var(--bad); min-height:1.4em"
-                        ></p>
-
+                        <p class="hint" id="formErr" style="color:var(--bad); min-height:1.4em"></p>
 
                         <div class="modal-actions">
-
-                            <button class="btn btn-primary" type="submit">
-                                Save
-                            </button>
-
-                            <button class="btn btn-ghost" type="button" data-close>
-                                Cancel
-                            </button>
-
+                            <button class="btn btn-primary" type="submit">Save</button>
+                            <button class="btn btn-ghost" type="button" data-close>Cancel</button>
                         </div>
 
                     </form>
@@ -151,7 +109,6 @@
         </main>
 
     </div>
-
 
     <script src="js/common.js"></script>
     <script src="js/books.js"></script>

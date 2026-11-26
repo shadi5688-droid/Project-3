@@ -1,5 +1,6 @@
-
-const $ = id => document.getElementById(id);
+function $(id) {
+    return document.getElementById(id);
+}
 
 const esc = LMS.esc;
 
@@ -7,116 +8,94 @@ const esc = LMS.esc;
 function render() {
 
     const q = $('search').value.trim().toLowerCase();
-
     const members = LMS.members();
     const books = LMS.books();
+    const loans = LMS.loans();
 
+    let html = '';
 
-    const rows = LMS.loans()
+    for (let i = 0; i < loans.length; i++) {
+        const l = loans[i];
 
-        .filter(l => !l.returnDate)
+        if (l.returnDate) {
+            continue;
+        }
 
-        .map(l => ({
-            l,
-            m: members.find(x => x.id === l.memberId) || {},
-            b: books.find(x => x.id === l.bookId) || {}
-        }))
+        const member = members.find(function (m) { return m.id === l.memberId; });
+        const book = books.find(function (b) { return b.id === l.bookId; });
 
-        .filter(r =>
-            [r.l.id, r.m.name, r.m.phone, r.b.title]
-                .join(' ')
-                .toLowerCase()
-                .includes(q)
-        );
+        const memberName = member ? member.name : '— (Deleted)';
+        const memberPhone = member ? member.phone : '—';
+        const bookTitle = book ? book.title : '— (Deleted)';
 
+        const text = [l.id, memberName, memberPhone, bookTitle].join(' ').toLowerCase();
+        if (!text.includes(q)) {
+            continue;
+        }
 
-    $('rows').innerHTML = rows.length
+        let rowClass = '';
+        if (LMS.statusOf(l) === 'overdue') {
+            rowClass = 'late';
+        }
 
-        ? rows.map(({ l, m, b }) => `
-            <tr class="${LMS.statusOf(l) === 'overdue' ? 'late' : ''}">
+        html += '<tr class="' + rowClass + '">' +
+            '<td class="num">' + esc(l.id) + '</td>' +
+            '<td>' + esc(memberName) + '</td>' +
+            '<td class="num">' + esc(memberPhone) + '</td>' +
+            '<td>' + esc(bookTitle) + '</td>' +
+            '<td class="num">' + l.borrowDate + '</td>' +
+            '<td class="num">' + l.dueDate + '</td>' +
+            '<td>' + LMS.badge(l) + '</td>' +
+            '<td><button class="btn btn-ok btn-sm" onclick="returnBook(\'' + l.id + '\')">Record Return</button></td>' +
+            '</tr>';
+    }
 
-                <td class="num">${l.id}</td>
+    if (html === '') {
+        html = '<tr><td colspan="8" class="empty">There are no books awaiting return.</td></tr>';
+    }
 
-                <td>${esc(m.name || '— (Deleted)')}</td>
-
-                <td class="num">${esc(m.phone || '—')}</td>
-
-                <td>${esc(b.title || '— (Deleted)')}</td>
-
-                <td class="num">${l.borrowDate}</td>
-
-                <td class="num">${l.dueDate}</td>
-
-                <td>${LMS.badge(l)}</td>
-
-                <td>
-                    <button class="btn btn-ok btn-sm"
-                        data-ret="${l.id}">
-                        Record Return
-                    </button>
-                </td>
-
-            </tr>
-        `).join('')
-
-        : `
-            <tr>
-                <td colspan="8" class="empty">
-                    There are no books awaiting return.
-                </td>
-            </tr>
-        `;
+    $('rows').innerHTML = html;
 }
-
 
 $('search').oninput = render;
 
 
-$('rows').addEventListener('click', async e => {
-
-    const btn = e.target.closest('[data-ret]');
-
-    if (!btn) return;
 
 
-    if (!await LMS.confirmBox(
-        'Confirm that the book has been received and returned?',
-        'Record Return'
-    )) {
+function returnBook(loanId) {
+
+    if (!confirm('Confirm that the book has been received and returned?')) {
         return;
     }
 
-
     const loans = LMS.loans();
-    const l = loans.find(x => x.id === btn.dataset.ret);
+    const loan = loans.find(function (x) { return x.id === loanId; });
 
-    if (!l || l.returnDate) return;
+    if (!loan || loan.returnDate) {
+        return;
+    }
 
-
-    l.returnDate = LMS.today();
-
+    loan.returnDate = LMS.today();
 
     const books = LMS.books();
-    const b = books.find(x => x.id === l.bookId);
+    const book = books.find(function (b) { return b.id === loan.bookId; });
 
+    if (book) {
+        book.available = book.available + 1;
 
-    if (b) {
-
-        b.available = Math.min(
-            b.available + 1,
-            b.quantity
-        );
+        if (book.available > book.quantity) {
+            book.available = book.quantity;
+        }
 
         LMS.saveBooks(books);
     }
-
 
     LMS.saveLoans(loans);
 
     LMS.toast('Book return recorded successfully');
 
     render();
+}
 
-});
 
 render();

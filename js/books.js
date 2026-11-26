@@ -1,4 +1,7 @@
-const $ = id => document.getElementById(id);
+
+function $(id) {
+    return document.getElementById(id);
+}
 
 const esc = LMS.esc;
 
@@ -6,192 +9,186 @@ const esc = LMS.esc;
 function render() {
 
     const q = $('search').value.trim().toLowerCase();
+    const books = LMS.books();
 
-    const list = LMS.books().filter(b =>
-        [b.id, b.title, b.author, b.category, b.isbn]
-        .join(' ')
-        .toLowerCase()
-        .includes(q)
-    );
+    let html = '';
+    const categories = [];
 
-    $('rows').innerHTML = list.length
+    for (let i = 0; i < books.length; i++) {
+        const b = books[i];
 
-        ? list.map(b => `
-            <tr>
-                <td class="num">${esc(b.id)}</td>
-                <td>${esc(b.title)}</td>
-                <td>${esc(b.author)}</td>
-                <td>${esc(b.category)}</td>
-                <td class="num">${esc(b.isbn)}</td>
-                <td>${b.quantity}</td>
+        if (!categories.includes(b.category)) {
+            categories.push(b.category);
+        }
 
-                <td>
-                    <span class="badge ${b.available > 0 ? 'badge-avail' : 'badge-none'}">
-                        ${b.available}
-                    </span>
-                </td>
+        const text = [b.id, b.title, b.author, b.category, b.isbn].join(' ').toLowerCase();
+        if (!text.includes(q)) {
+            continue;
+        }
 
-                <td class="actions">
-                    <button class="btn btn-ghost btn-sm" data-edit="${b.id}">
-                        Edit
-                    </button>
+        let badgeClass = 'badge-none';
+        if (b.available > 0) {
+            badgeClass = 'badge-avail';
+        }
 
-                    <button class="btn btn-danger btn-sm" data-del="${b.id}">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        `).join('')
+        html += '<tr>' +
+            '<td class="num">' + esc(b.id) + '</td>' +
+            '<td>' + esc(b.title) + '</td>' +
+            '<td>' + esc(b.author) + '</td>' +
+            '<td>' + esc(b.category) + '</td>' +
+            '<td class="num">' + esc(b.isbn) + '</td>' +
+            '<td>' + b.quantity + '</td>' +
+            '<td><span class="badge ' + badgeClass + '">' + b.available + '</span></td>' +
+            '<td class="actions">' +
+                '<button class="btn btn-ghost btn-sm" onclick="editBook(\'' + b.id + '\')">Edit</button> ' +
+                '<button class="btn btn-danger btn-sm" onclick="deleteBook(\'' + b.id + '\')">Delete</button>' +
+            '</td>' +
+            '</tr>';
+    }
 
-        : `
-            <tr>
-                <td colspan="8" class="empty">
-                    No matching books. Add a new book to get started.
-                </td>
-            </tr>
-        `;
+    if (html === '') {
+        html = '<tr><td colspan="8" class="empty">No matching books. Add a new book to get started.</td></tr>';
+    }
 
-    $('cats').innerHTML = [
-        ...new Set(LMS.books().map(b => b.category))
-    ].map(c => `<option value="${esc(c)}">`).join('');
+    $('rows').innerHTML = html;
+
+    let options = '';
+    for (let i = 0; i < categories.length; i++) {
+        options += '<option value="' + esc(categories[i]) + '">';
+    }
+    $('cats').innerHTML = options;
 }
+
 
 
 function openForm(b) {
 
-    $('modalTitle').textContent = b ? 'Edit Book' : 'Add Book';
+    if (b) {
+        $('modalTitle').textContent = 'Edit Book';
+        $('bid').value = b.id;
+        $('title').value = b.title;
+        $('author').value = b.author;
+        $('category').value = b.category;
+        $('isbn').value = b.isbn;
+        $('qty').value = b.quantity;
+    } else {
+        $('modalTitle').textContent = 'Add Book';
+        $('bid').value = '';
+        $('title').value = '';
+        $('author').value = '';
+        $('category').value = '';
+        $('isbn').value = '';
+        $('qty').value = 1;
+    }
 
-    $('bid').value = b ? b.id : '';
-
-    $('title').value = b ? b.title : '';
-    $('author').value = b ? b.author : '';
-    $('category').value = b ? b.category : '';
-    $('isbn').value = b ? b.isbn : '';
-
-    $('qty').value = b ? b.quantity : 1;
-
-    // Clear previous error message
     $('formErr').textContent = '';
-
-    // Open the modal window
     LMS.openModal('modal');
-
     $('title').focus();
 }
 
-$('addBtn').onclick = () => openForm(null);
+$('addBtn').onclick = function () {
+    openForm(null);
+};
 
 $('search').oninput = render;
 
+function editBook(id) {
+    const book = LMS.books().find(function (b) { return b.id === id; });
+    openForm(book);
+}
 
-$('form').addEventListener('submit', e => {
+
+
+$('form').addEventListener('submit', function (e) {
 
     e.preventDefault();
 
-    const data = {
-        title: $('title').value.trim(),
-        author: $('author').value.trim(),
-        category: $('category').value.trim(),
-        isbn: $('isbn').value.trim(),
-        quantity: parseInt($('qty').value, 10)
-    };
+    const title = $('title').value.trim();
+    const author = $('author').value.trim();
+    const category = $('category').value.trim();
+    const isbn = $('isbn').value.trim();
+    const quantity = parseInt($('qty').value, 10);
+    const id = $('bid').value;  
 
-    if (!data.title || !data.author || !data.category || !data.isbn)
-        return $('formErr').textContent =
-            'Please complete all required fields.';
+    if (title === '' || author === '' || category === '' || isbn === '') {
+        $('formErr').textContent = 'Please complete all required fields.';
+        return;
+    }
 
-    if (!(data.quantity >= 1))
-        return $('formErr').textContent =
-            'Quantity must be at least 1.';
+    if (!(quantity >= 1)) {
+        $('formErr').textContent = 'Quantity must be at least 1.';
+        return;
+    }
 
     const books = LMS.books();
-    const id = $('bid').value;
 
-    if (books.some(b => b.isbn === data.isbn && b.id !== id))
-        return $('formErr').textContent =
-            'This ISBN is already assigned to another book.';
+    for (let i = 0; i < books.length; i++) {
+        if (books[i].isbn === isbn && books[i].id !== id) {
+            $('formErr').textContent = 'This ISBN is already assigned to another book.';
+            return;
+        }
+    }
 
+    if (id !== '') {
 
-    if (id) {
+        const book = books.find(function (b) { return b.id === id; });
 
-        const b = books.find(x => x.id === id);
+        const out = book.quantity - book.available;
 
-        const out = b.quantity - b.available;
+        if (quantity < out) {
+            $('formErr').textContent = 'Quantity cannot be less than ' + out + ' (copies are currently on loan).';
+            return;
+        }
 
-        if (data.quantity < out)
-            return $('formErr').textContent =
-                `Quantity cannot be less than ${out} (copies are currently on loan).`;
-
-        Object.assign(b, data, {
-            available: data.quantity - out
-        });
+        book.title = title;
+        book.author = author;
+        book.category = category;
+        book.isbn = isbn;
+        book.quantity = quantity;
+        book.available = quantity - out;
 
         LMS.toast('Book updated successfully');
 
-    }
-
-    else {
+    } else {
 
         books.push({
             id: LMS.nextId('B', books),
-            ...data,
-            available: data.quantity
+            title: title,
+            author: author,
+            category: category,
+            isbn: isbn,
+            quantity: quantity,
+            available: quantity
         });
 
         LMS.toast('Book added successfully');
     }
 
     LMS.saveBooks(books);
-
     LMS.closeModal('modal');
     render();
-
 });
 
+function deleteBook(id) {
 
-$('rows').addEventListener('click', async e => {
-
-    const ed = e.target.closest('[data-edit]');
-    const del = e.target.closest('[data-del]');
-
-
-    if (ed) {
-
-        openForm(
-            LMS.books().find(b => b.id === ed.dataset.edit)
-        );
-    }
-
-
-    if (del) {
-
-        const id = del.dataset.del;
-
-        if (LMS.loans().some(l =>
-            l.bookId === id && !l.returnDate
-        ))
-            return LMS.toast(
-                'A book with copies currently on loan cannot be deleted.',
-                'error'
-            );
-
-        if (await LMS.confirmBox(
-            'Are you sure you want to permanently delete this book?',
-            'Delete',
-            true
-        )) {
-
-            LMS.saveBooks(
-                LMS.books().filter(b => b.id !== id)
-            );
-
-            LMS.toast('Book deleted successfully');
-
-            render();
+    const loans = LMS.loans();
+    for (let i = 0; i < loans.length; i++) {
+        if (loans[i].bookId === id && !loans[i].returnDate) {
+            LMS.toast('A book with copies currently on loan cannot be deleted.', 'error');
+            return;
         }
     }
 
-});
+    if (confirm('Are you sure you want to permanently delete this book?')) {
 
+        const books = LMS.books().filter(function (b) {
+            return b.id !== id;
+        });
+
+        LMS.saveBooks(books);
+        LMS.toast('Book deleted successfully');
+        render();
+    }
+}
 
 render();
