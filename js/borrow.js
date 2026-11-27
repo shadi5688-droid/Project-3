@@ -29,8 +29,9 @@ function fillSelects() {
 
 
 
-    let bookOptions = '<option value="">— Select a book —</option>';
-    let availableCount = 0;
+     let availableCount = 0;
+     
+     let bookOptions = '<option value="">— Select a book —</option>';
     for (let i = 0; i < books.length; i++) {
         //مرات نا فيش نسخ
         if (books[i].available > 0) {
@@ -107,12 +108,17 @@ $('form').addEventListener('submit', function (e) {
         dueDate: dueDate,
         returnDate: null
     });
- //ثم نحفظ التغييرات:
+    
+    //ثم نحفظ التغييرات:
     LMS.saveBooks(books);
     LMS.saveLoans(loans);
 
-    LMS.toast('Borrowing recorded successfully');
 
+    // رسالة
+    LMS.toast('Borrowing recorded successfully');
+ 
+
+    //يرد كل حاجة يعد submit
     $('form').reset();
     resetDates();
     fillSelects();
@@ -123,5 +129,5 @@ $('form').addEventListener('submit', function (e) {
 
 //اوامر يشتغلن عند تحميل الصفحة و تجهز 
 fillSelects();
-
+resetDates();
 renderRecent();
