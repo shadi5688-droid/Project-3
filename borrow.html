@@ -1,95 +1,72 @@
 <!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-<html>
-
-<head>  
-
-<title>Borrow a Book | LIMU Library</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Borrow a Book | LIMU Library</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body data-page="borrow">
 
+    <div class="layout">
 
-<div class="layout">
+        <aside class="sidebar" id="sidebar"></aside>
 
-    <aside class="sidebar" id="sidebar"></aside>
+        <main class="content">
 
-    <main class="content">
-
-        <header class="page-header">
-            <div>
-                <h1>Borrow a Book</h1>
-                <p>Select a member and an available book, then set the due date</p>
-            </div>
-        </header>
-
-        <section class="card">
-
-            <form id="form" novalidate>
-
-                <div class="form-grid">
-
-                    <div class="field">
-                        <label for="member">Member *</label>
-                        <select class="input" id="member"></select>
-                    </div>
-
-                    <div class="field">
-                        <label for="book">Book (available copies only) *</label>
-                        <select class="input" id="book"></select>
-                        <span class="hint" id="availInfo"></span>
-                    </div>
-
-                    <div class="field">
-                        <label for="borrowDate">Borrow Date</label>
-                        <input class="input" id="borrowDate" type="date">
-                    </div>
-
-                    <div class="field">
-                        <label for="dueDate">Due Date</label>
-                        <input class="input" id="dueDate" type="date">
-                    </div>
-
+            <header class="page-header">
+                <div>
+                    <h1>Borrow a Book</h1>
+                    <p>Select a member and an available book, then set the due date</p>
                 </div>
+            </header>
 
-                <p class="hint" id="formErr" style="color:var(--bad);min-height:1.4em"></p>
+            <section class="card">
 
-                <button class="btn btn-primary" type="submit">
-                    Record Borrowing
-                </button>
+                <form id="form" novalidate>
 
-            </form>
-        </section>
+                    <div class="form-grid">
 
-        <section class="card">
+                        <div class="field">
+                            <label for="member">Member *</label>
+                            <select class="input" id="member">  </select>
+                        </div>
 
-            <h2 class="card-title">Recent Borrowings</h2>
+                        <div class="field">
+                            <label for="book">Book (available copies only) *</label>
+                            <select class="input" id="book"></select>
+                            <span class="hint" id="availInfo"></span>
+                        </div>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Borrow ID</th>
-                            <th>Member</th>
-                            <th>Book</th>
-                            <th>Borrow Date</th>
-                            <th>Due Date</th>
-                        </tr>
-                    </thead>
+                        <div class="field">
+                            <label for="borrowDate">Borrow Date</label>
+                            <input class="input" id="borrowDate" type="date">
+                        </div>
 
-                    <tbody id="rows"></tbody>
-                </table>
-            </div>
+                        <div class="field">
+                            <label for="dueDate">Due Date</label>
+                            <input class="input" id="dueDate" type="date">
+                        </div>
 
-        </section>
+                    </div>
 
-    </main>
-</div>
-</body> </html>
-</div>
+                    <p class="hint" id="formErr" style="color:var(--bad); min-height:1.4em"></p>
+
+                    <button class="btn btn-primary" type="submit">Record Borrowing</button>
+
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/borrow.js"></script>
+
+</body>
+</html>
