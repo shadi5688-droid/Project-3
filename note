@@ -1,1 +1,14 @@
  LMS.books()
+     //LMS.statusOf()ظيفتها تحديد حالة الاستعارة.
+    //ترجع واحدة من ثلاث قيم:
+    //- borrowed
+    //- overdue
+    //- returned
+    if (LMS.statusOf(loans[i]) === 'overdue') {  //@@@@@@@@@@@@@@@@@@@@@
+        overdueCount++;
+    }
+    // بعرض كيف التنبيه على عدد الاستعارات الي فاتن موعدهن
+if (overdueCount > 0) {
+    $('overdueAlert').hidden = false;  // لو true يختفن
+    $('overdueAlert').textContent = 'There are ' + overdueCount + ' overdue loans.';
+}
