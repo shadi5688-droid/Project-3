@@ -1,94 +1,116 @@
 <!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-<html>
-
-<head>     
-
-<title>Dashboard | LIMU Library</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | LIMU Library</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body data-page="dashboard">
 
-<div class="layout">
+    <div class="layout">
 
-    <aside class="sidebar" id="sidebar"></aside>
+        <aside class="sidebar" id="sidebar"></aside>
 
-    <main class="content">
+        <main class="content">
 
-        <header class="page-header">
-            <div>
-                <h1>Dashboard</h1>
-                <p>Library overview</p>
-            </div>
-
-            <p id="todayLabel"></p>
-        </header>
-
-        <section class="stats">
-
-            <div class="stat">
-                <span class="stat-ico" data-icon="books"></span>
+            <header class="page-header">
                 <div>
-                    <b id="sBooks">0</b>
-                    <small>Total Books</small>
+                    <h1>Dashboard</h1>
+                    <p>Library overview</p>
                 </div>
-            </div>
 
-            <div class="stat">
-                <span class="stat-ico" data-icon="users"></span>
-                <div>
-                    <b id="sMembers">0</b>
-                    <small>Total Members</small>
+                <p id="todayLabel"></p>
+            </header>
+
+            <section class="stats">
+
+                <div class="stat">
+                    <span class="stat-ico" data-icon="books"></span>
+                    <div>
+                        <b id="sBooks">0</b>
+                        <small>Total Books</small>
+                    </div>
                 </div>
-            </div>
 
-            <div class="stat">
-                <span class="stat-ico" data-icon="borrow"></span>
-                <div>
-                    <b id="sBorrowed">0</b>
-                    <small>Books Borrowed</small>
+                <div class="stat">
+                    <span class="stat-ico" data-icon="users"></span>
+                    <div>
+                        <b id="sMembers">0</b>
+                        <small>Total Members</small>
+                    </div>
                 </div>
-            </div>
 
-            <div class="stat">
-                <span class="stat-ico" data-icon="check"></span>
-                <div>
-                    <b id="sAvail">0</b>
-                    <small>Available Copies</small>
+                <div class="stat">
+                    <span class="stat-ico" data-icon="borrow"></span>
+                    <div>
+                        <b id="sBorrowed">0</b>
+                        <small>Books Borrowed</small>
+                    </div>
                 </div>
-            </div>
 
-        </section>
+                <div class="stat">
+                    <span class="stat-ico" data-icon="check"></span>
+                    <div>
+                        <b id="sAvail">0</b>
+                        <small>Available Copies</small>
+                    </div>
+                </div>
 
-        <div id="overdueAlert" class="alert" hidden></div>
+            </section>
 
-        <section class="card">
+            <div id="overdueAlert" class="alert" hidden></div>
 
-            <h2 class="card-title">Recent Activity</h2>
+            <section class="card">
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Member</th>
-                            <th>Book</th>
-                            <th>Borrow Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+                <h2 class="card-title">Borrowing Activity</h2>
 
-                    <tbody id="recent"></tbody>
-                </table>
-            </div>
+                <div class="toolbar">
 
-        </section>
+                    <input
+                        class="input"
+                        id="search"
+                        placeholder="Search by borrow ID, member, or book title"
+                    >
 
-    </main>
-</div>
+                    <select class="input" id="status">
+                        <option value="">All statuses</option>
+                        <option value="borrowed">Borrowed</option>
+                        <option value="overdue">Overdue</option>
+                        <option value="returned">Returned</option>
+                    </select>
 
-</body> </html>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Borrow ID</th>
+                                <th>Member</th>
+                                <th>Book</th>
+                                <th>Borrow Date</th>
+                                <th>Due Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="rows"></tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+
+</body>
+</html>
