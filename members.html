@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Member Management | LIMU Library</title>
+
     <link rel="stylesheet" href="css/style.css">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -23,7 +23,9 @@
                     <p>Register library members and manage their details</p>
                 </div>
 
-                <button class="btn btn-primary" id="addBtn">＋ Add Member</button>
+                <button class="btn btn-primary" id="addBtn">
+                    ＋ Add Member
+                </button>
             </header>
 
             <div class="toolbar">
@@ -35,6 +37,7 @@
             </div>
 
             <div class="table-wrap">
+
                 <table>
                     <thead>
                         <tr>
@@ -49,6 +52,7 @@
 
                     <tbody id="rows"></tbody>
                 </table>
+
             </div>
 
             <div class="modal-overlay" id="modal">
@@ -57,34 +61,36 @@
 
                     <h3 id="modalTitle">Add Member</h3>
 
+                    <!-- Member Form -->
                     <form id="form" novalidate>
 
                         <input type="hidden" id="mid">
 
-                        <div class="form-grid">
-
+                        <div class="form-grid"> 
+ 
                             <div class="field">
                                 <label for="name">Full Name *</label>
                                 <input class="input" id="name">
                             </div>
-
+                            
                             <div class="field">
                                 <label for="phone">Phone Number *</label>
-<<<<<<< HEAD
                                 <input  
                                     class="input"
                                     id="phone"
                                     dir="ltr"
                                     inputmode="tel"
                                 > 
-=======
-                                <input class="input" id="phone" dir="ltr" inputmode="tel">
->>>>>>> 170d6fdb148d3c2062ff28599363288b6228b393
-                            </div>
-                            f
+                            </div> 
+               f  
                             <div class="field">
                                 <label for="email">Email</label>
-                                <input class="input" id="email" type="email" dir="ltr">
+                                <input
+                                    class="input"
+                                    id="email"
+                                    type="email"
+                                    dir="ltr"
+                                >
                             </div>
 
                             <div class="field">
@@ -94,25 +100,29 @@
 
                         </div>
 
-                        <p class="hint" id="formErr" style="color:var(--bad); min-height:1.4em"></p>
+                        <p
+                            class="hint"
+                            id="formErr"
+                            style="color:var(--bad);min-height:1.4em"
+                        ></p>
 
                         <div class="modal-actions">
-                            <button class="btn btn-primary" type="submit">Save</button>
-                            <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+
+                            <button class="btn btn-primary" type="submit">
+                                Save
+                            </button>
+
+                            <button class="btn btn-ghost" type="button" data-close>
+                                Cancel
+                            </button>
+
                         </div>
 
                     </form>
-
                 </div>
-
             </div>
 
         </main>
-
     </div>
-
-    <script src="js/common.js"></script>
-    <script src="js/members.js"></script>
-
 </body>
 </html>
