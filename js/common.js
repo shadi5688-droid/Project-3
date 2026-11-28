@@ -52,7 +52,7 @@ const LMS = {
 
     formatDate: function (d) {
         const year = d.getFullYear();
-        let month = d.getMonth() + 1;
+        let month = d.getMonth() + 1;  //@@@
         let day = d.getDate();
 
         if (month < 10) { month = '0' + month; }
@@ -60,10 +60,14 @@ const LMS = {
 
         return year + '-' + month + '-' + day;
     },
+     
 
+
+    // اليوم 
     today: function () {
         return LMS.formatDate(new Date());
     },
+     
 
     addDays: function (dateText, days) {
         const d = new Date(dateText + 'T00:00:00');
@@ -159,11 +163,12 @@ const LMS = {
     },
 
 
-  
+  //حالة الاستعارة  //////////////////////////////
     statusOf: function (loan) {
         if (loan.returnDate) {
             return 'returned';
         }
+
         if (loan.dueDate < LMS.today()) {
             return 'overdue';
         }

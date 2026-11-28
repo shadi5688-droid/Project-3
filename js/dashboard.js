@@ -1,8 +1,7 @@
-// دالة مختصرة عشان نستدعيها طول و بطريقة مختصرة @@@@@@@@@@@@@@@@@@@@
+// دالة مختصرة عشان نستدعيها طول و بطريقة مختصرة 
 function $(id) {
     return document.getElementById(id);
 }
-// $(id) 
 
 // اوامر استدعاء من common
 const books = LMS.books(); // الكتب
@@ -24,87 +23,69 @@ for (let i = 0; i < loans.length; i++) {
     if (!loans[i].returnDate) { // م يعني لو في تاريخ معناها رد الكتاب لو مفش معناها العداد يزيد
         borrowedCount++;
     }
-    //LMS.statusOf()ظيفتها تحديد حالة الاستعارة.
-    //ترجع واحدة من ثلاث قيم:
-    //- borrowed
-    //- overdue
-    //- returned
-    if (LMS.statusOf(loans[i]) === 'overdue') {
-        overdueCount++;
-    }
 }
-// في html
-$('sBooks').textContent = totalBooks;
-$('sMembers').textContent = members.length;  // عدد الكلي ما يتغيرش
+
+document.getElementById('sBooks').textContent = totalBooks;
+$('sMembers').textContent = members.length;  
 $('sBorrowed').textContent = borrowedCount;
 $('sAvail').textContent = availableBooks;
 
-$('todayLabel').textContent = new Date().toLocaleDateString('en-GB');  // يعرض تاريخ اليوم 
-  
-// بعرض كيف التنبيه على عدد الاستعارات الي فاتن موعدهن
-if (overdueCount > 0) {
-    $('overdueAlert').hidden = false;  // لو true يختفن
-    $('overdueAlert').textContent = 'There are ' + overdueCount + ' overdue loans.';
-}
 
-//تعني تجهيز وعرض المحتوى داخل صفحة الويب.  @@@@@@@@@@@@@@@@@@@@
+
+
 function render() {
-// حالة العنصر
-    const status = $('status').value;
-    //slice() ننشئ نسخة جديدة من arry 
-    //عشان ما نبيش نعدل loans
-    const sorted = loans.slice().sort(
-        function (a, b) {
+//  حالة العنصر الي اختارها المستخدم في html
+    const status = $('status').value; 
 
-              //تقارن بين نصين لترتيبهما أبجدياً.
-              //استخدمنا b قبل a للحصول على ترتيب تنازلي.
-        return b.id.localeCompare(a.id);//@@@@@@@@@@@@@@@@@@@@@@@
+    //() ننشئ نسخة جديدة من arry 
+    //و نرتبها
 
-    });
- //متغير عشان تحطو فيه الجدول
-    let html = '';      //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    const sorted = LMS.loans().sort()
+
+    //متغير عشان تحطو فيه الجدول
+    let html = '';      
+    
     //على طول البيانات النخزنة
     for (let i = 0; i < sorted.length; i++) {
 
         const l = sorted[i];
-        //تعني: ابحثي عن العضو الذي يتطابق رقمه مع رقم العضو الموجود في سجل الاستعارة.
+        // ابحثي عن العضو الذي يتطابق رقمه مع رقم العضو الموجود في سجل الاستعارة.
+
         const member = members.find(function (m) 
         { return m.id === l.memberId; }
         );
+
         const book = books.find(function (b)
          { return b.id === l.bookId; 
 
          }
         );
-        //إذا وجدنا العضو، نأخذ اسمه.
-        //ا لم نجده، نعرض — (Deleted).
-        const memberName = member ? member.name : '— (Deleted)';
-        const bookTitle = book ? book.title : '— (Deleted)';
-         
-        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+        //إذا اختار المستخدم حالة معينة، وكانت حالة الاستعارة الحالية مختلفة عن الحالة المختارة، فتخطَّ هذه الاستعارة وانتقل إلى الاستعارة التالية.                                                    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         if (status !== '' && LMS.statusOf(l) !== status) {
             continue;
         }
 
-        let rowClass = '';
-        if (LMS.statusOf(l) === 'overdue') {
-            rowClass = 'late';
-        }
+    
 
-        html += '<tr class="' + rowClass + '">' +
-            '<td class="num">' + LMS.esc(l.id) + '</td>' +
-            '<td>' + LMS.esc(memberName) + '</td>' +
-            '<td>' + LMS.esc(bookTitle) + '</td>' +
-            '<td class="num">' + l.borrowDate + '</td>' +
-            '<td class="num">' + l.dueDate + '</td>' +
-            '<td class="num">' + (l.returnDate || '—') + '</td>' +
-            '<td>' + LMS.badge(l) + '</td>' +
-            '</tr>';
+        html += '<tr class="">' +
+    '<td class="num">' + l.id + '</td>' +
+    '<td>' + member.name  + '</td>' +
+    '<td>' + book.title + '</td>' +
+    '<td class="num">' + l.borrowDate + '</td>' +
+    '<td class="num">' + l.dueDate + '</td>' +
+    '<td class="num">' + (l.returnDate || '—') + '</td>' +
+    '<td>' + LMS.badge(l) + '</td>' +// حالة الاستعارة
+    '</tr>';
     }
 
+
     $('rows').innerHTML = html;
+
 }
-// : عندما يغير المستخدم حالة الاستعارة من القائمة، يتم تشغيل render() من جديد لتحديث الجدول.
-$('status').onchange = render;
+
+$('status').onchange = render;// كل ما صار تغير في starus  يدث الصفحة
 //يشغل render() مباشرة عند فتح الصفحة لأول مرة، حتى تظهر البيانات دون الحاجة إلى الضغط على شيء.
 render();
+
