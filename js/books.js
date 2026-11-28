@@ -179,7 +179,7 @@ function deleteBook(id) {
         }
     }
 
-    
+    if (confirm('Are you sure you want to permanently delete this book?')) {
 
         const books = LMS.books().filter(function (b) {
             return b.id !== id;
