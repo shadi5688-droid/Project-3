@@ -3,7 +3,7 @@ function $(id) {
     return document.getElementById(id);
 }
 
-const esc = LMS.esc;
+const esc = LMS.esc; 
 
 
 function render() {
