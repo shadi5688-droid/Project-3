@@ -5,7 +5,10 @@ function $(id) {
 const esc = LMS.esc;
 
 
+
+
 function render() {
+
 
     const q = $('search').value.trim().toLowerCase();
     const members = LMS.members();
@@ -14,12 +17,14 @@ function render() {
 
     let html = '';
 
+
     for (let i = 0; i < loans.length; i++) {
         const l = loans[i];
 
         if (l.returnDate) {
             continue;
         }
+        
 
         const member = members.find(function (m) { return m.id === l.memberId; });
         const book = books.find(function (b) { return b.id === l.bookId; });
